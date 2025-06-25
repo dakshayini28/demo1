@@ -27,7 +27,7 @@ public class MainController {
         }
     }
 
-    @GetMapping("/databases")
+    @GetMapping("/catalogs")
     public List<String> getDatabases(@RequestParam String url,
                                      @RequestParam String username,
                                      @RequestParam String password) {
