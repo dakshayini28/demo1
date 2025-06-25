@@ -1,5 +1,6 @@
 package com.example.demo1.service;
 
+import com.example.demo1.entity.DbDetails;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
@@ -10,27 +11,24 @@ import java.util.Map;
 
 @Service
 public class MainService {
-    Connection con;
-    public boolean isConnected() {
+    private Connection con;
+    public boolean isConnected(DbDetails body) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/studentdb",
-                    "root", "dakshu");
+                    body.getUrl(),
+                    body.getUsername(), body.getPassword());
             if (con != null) {
                 return true;
             }
-        } catch (ClassNotFoundException e) {
-            System.out.println("JDBC Driver not found: " + e.getMessage());
         } catch (SQLException e) {
             System.out.println("SQL Exception: " + e.getMessage());
         }
         return false;
     }
-    public List<String> databases(){
+    public List<String> databases(DbDetails body){
         String sql="show databases";
         List<String> databaseList =new ArrayList<>();
-        if(isConnected()){
+        if(isConnected(body)){
             try (Statement stmt = con.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
                 while (rs.next()) {
@@ -45,11 +43,11 @@ public class MainService {
         return databaseList;
     }
 
-    public List<String> tables(String db){
-        String sql = "SHOW TABLES IN " + db;
-        System.out.println("database selected"+db);
+    public List<String> tables(String db,DbDetails body){
+        String sql = "show tables in " + db;
+        System.out.println("database selected: "+db);
         List<String> al=new ArrayList<>();
-        if(isConnected()){
+        if(isConnected(body)){
             try(Statement stmt= con.createStatement();
             ResultSet rs= stmt.executeQuery(sql)){
                 while(rs.next()){
@@ -63,10 +61,10 @@ public class MainService {
         }
         return al;
     }
-    public HashMap<String,String> columns(String database, String table){
+    public HashMap<String,String> columns(String database, String table,DbDetails body){
         String sql="show columns in "+database+"."+table;
         HashMap<String,String> h=new HashMap<>();
-        if(isConnected()){
+        if(isConnected(body)){
             try(Statement stmt=con.createStatement();
             ResultSet rs=stmt.executeQuery(sql)){
                 while(rs.next()){
