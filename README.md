@@ -1,0 +1,9 @@
+- Git-integrated Spring Boot project
+- Clean packaging structure (controller, service, config, etc.)
+- Working JDBC connection to **MSSQL Server**--(MySql)
+- Functional APIs:
+    - `GET /connect/test` → To check if the connection is active
+    - `GET /catalogs` → Get all the list of Databases for a provided MSSQL Server details
+    - `GET /schemas` → Get all the list of Schemas for a provided Database --
+    - `GET /tables` → Get all the list of Tables for provided Database and Schema
+    - `GET /columns` → Get all the list of Columns with Type for provided Database, Schema, Table
