@@ -15,7 +15,7 @@ public class MainController {
     @Autowired
     MainService m;
 
-    @GetMapping("connect/test")
+    @GetMapping("/connect/test")
     public ResponseEntity<String> testConnection(@RequestParam String url,
                                                  @RequestParam String username,
                                                  @RequestParam String password) {
