@@ -100,6 +100,24 @@ public class ConnectionService {
         }
         return al;
     }
+    public void updateConnection(int id,String name,String url,String username,String password){
+        String sql="update connectiondb.connections set name=?,url=?,username=?,password=? where id=?";
+        DbDetails db = new DbDetails("jdbc:mysql://localhost:3306", "root", "dakshu");
+        try(Connection con=DriverManager.getConnection(db.getUrl(),db.getUsername(),db.getPassword());
+        PreparedStatement pstmt=con.prepareStatement(sql);){
+            pstmt.setString(1,name);
+            pstmt.setString(2,url);
+            pstmt.setString(3,username);
+            pstmt.setString(4,password);
+            pstmt.setInt(5,id);
+            int rowsaffected=pstmt.executeUpdate();
+            if(rowsaffected==0){
+                throw new RuntimeException("Connection Id not found");
+            }
+        }catch (Exception e){
+            throw new RuntimeException("Eroor");
+        }
 
+    }
 
 }
