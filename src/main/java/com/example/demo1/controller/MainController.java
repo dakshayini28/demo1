@@ -50,7 +50,7 @@ public class MainController {
             ConnectionEntity connection = optionalConnection.get();
             DbDetails db = new DbDetails(connection.getUrl(), connection.getUsername(), connection.getPassword());
             if(m.isConnected(db))
-                return ResponseEntity.ok(m.databases(db));
+                return ResponseEntity.ok(m.databases());
         }
         catch(RuntimeException e){
             if(e.getMessage().contains("Check"))
@@ -71,7 +71,7 @@ public class MainController {
             ConnectionEntity connection = optionalConnection.get();
             DbDetails db = new DbDetails(connection.getUrl(), connection.getUsername(), connection.getPassword());
             if(m.isConnected(db))
-                return ResponseEntity.ok(m.databases(db));
+                return ResponseEntity.ok(m.tables(database));
         }
         catch(RuntimeException e){
             if(e.getMessage().contains("Check if")){
@@ -94,7 +94,7 @@ public class MainController {
             ConnectionEntity connection = optionalConnection.get();
             DbDetails db = new DbDetails(connection.getUrl(), connection.getUsername(), connection.getPassword());
             if(m.isConnected(db))
-                return ResponseEntity.ok().body(m.columns(database, table, db));
+                return ResponseEntity.ok().body(m.columns(database, table));
         }catch(RuntimeException e){
             if(e.getMessage().contains("Check if")){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Check if database and tables exist");
