@@ -6,9 +6,10 @@ import com.example.demo1.repository.ConnectionRepo;
 import com.example.demo1.service.MainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 public class MainController {
@@ -22,35 +23,36 @@ public class MainController {
     @GetMapping("/connect/test")
     public ResponseEntity<String> testConnection(@RequestParam int id) {
         try{
-            ConnectionEntity c=repo.findById(id).get();
-            DbDetails db = new DbDetails(c.getUrl(),c.getUsername(), c.getPassword());
+            Optional<ConnectionEntity> optionalConnection = repo.findById(id);
+            if (optionalConnection.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Connection ID not present");
+            }
+            ConnectionEntity connection = optionalConnection.get();
+            DbDetails db = new DbDetails(connection.getUrl(), connection.getUsername(), connection.getPassword());
             if (m.isConnected(db)) {
                 return ResponseEntity.ok("Connected successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
             }
         }catch(RuntimeException e){
             if (e.getMessage().contains("credentials")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Check Credentials of connection");
             }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id not present");
         }
-
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Connection failed: ");
     }
 
     @GetMapping("/catalogs")
     public ResponseEntity<?> getDatabases(@RequestParam int id) {
         try{
-            ConnectionEntity c=repo.findById(id).get();
-            DbDetails db = new DbDetails(c.getUrl(),c.getUsername(), c.getPassword());
+            Optional<ConnectionEntity> optionalConnection = repo.findById(id);
+            if (optionalConnection.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Connection ID not present");
+            }
+            ConnectionEntity connection = optionalConnection.get();
+            DbDetails db = new DbDetails(connection.getUrl(), connection.getUsername(), connection.getPassword());
             if(m.isConnected(db))
                 return ResponseEntity.ok(m.databases(db));
         }
         catch(RuntimeException e){
-//            System.out.println(e);
-            if(e.getMessage().contains("No value present")){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Connection Id not present");
-            }
             if(e.getMessage().contains("Check"))
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Check connection Credentials");
         }
@@ -62,8 +64,12 @@ public class MainController {
                                   @RequestParam int id,
                                   @RequestParam String database) {
         try{
-            ConnectionEntity c=repo.findById(id).get();
-            DbDetails db = new DbDetails(c.getUrl(),c.getUsername(), c.getPassword());
+            Optional<ConnectionEntity> optionalConnection = repo.findById(id);
+            if (optionalConnection.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Connection ID not present");
+            }
+            ConnectionEntity connection = optionalConnection.get();
+            DbDetails db = new DbDetails(connection.getUrl(), connection.getUsername(), connection.getPassword());
             if(m.isConnected(db))
                 return ResponseEntity.ok(m.databases(db));
         }
@@ -73,7 +79,7 @@ public class MainController {
             }
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Check connection credentials");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID doesnt exist");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Connection Error");
 
     }
 
@@ -81,8 +87,12 @@ public class MainController {
     public ResponseEntity<?> getColumns(@RequestParam int id,
                                         @RequestParam String database, @RequestParam String table) {
         try{
-            ConnectionEntity c=repo.findById(id).get();
-            DbDetails db = new DbDetails(c.getUrl(),c.getUsername(), c.getPassword());
+            Optional<ConnectionEntity> optionalConnection = repo.findById(id);
+            if (optionalConnection.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Connection ID not present");
+            }
+            ConnectionEntity connection = optionalConnection.get();
+            DbDetails db = new DbDetails(connection.getUrl(), connection.getUsername(), connection.getPassword());
             if(m.isConnected(db))
                 return ResponseEntity.ok().body(m.columns(database, table, db));
         }catch(RuntimeException e){
@@ -93,6 +103,6 @@ public class MainController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Check connection credentials");
             }
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID doesnt exist");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Connection Error");
     }
 }
