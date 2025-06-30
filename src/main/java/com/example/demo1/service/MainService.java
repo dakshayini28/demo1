@@ -22,6 +22,7 @@ public class MainService {
             }
         } catch (SQLException e) {
             System.out.println("SQL Exception: " + e.getMessage());
+            throw new RuntimeException("Check credentials");
         }
         return false;
     }
@@ -37,14 +38,14 @@ public class MainService {
                 }
                 con.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Check credentials");
             }
         }
         return databaseList;
     }
 
     public List<String> tables(String db,DbDetails body){
-        String sql = "show tables in " + db;
+        String sql = "show tables in " +"`"+ db+"`";
         System.out.println("database selected: "+db);
         List<String> al=new ArrayList<>();
         if(isConnected(body)){
@@ -56,13 +57,15 @@ public class MainService {
                 con.close();
             }
             catch(SQLException e){
-                e.printStackTrace();
+//                e.printStackTrace();
+                throw new RuntimeException("Check if database exists");
+
             }
         }
         return al;
     }
     public HashMap<String,String> columns(String database, String table,DbDetails body){
-        String sql="show columns in "+database+"."+table;
+        String sql="show columns in `"+database+"`."+"`"+table+"`";
         HashMap<String,String> h=new HashMap<>();
         if(isConnected(body)){
             try(Statement stmt=con.createStatement();
@@ -72,7 +75,8 @@ public class MainService {
 //                    System.out.println(rs.getString("Field"));
                 }
             }catch (SQLException e){
-                e.printStackTrace();
+//                e.printStackTrace();
+                throw new RuntimeException("Check if database and table exists");
             }
         }
         return h;

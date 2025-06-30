@@ -1,15 +1,14 @@
 package com.example.demo1.controller;
 
+import com.example.demo1.entity.ConnectionEntity;
 import com.example.demo1.entity.DbDetails;
-import com.example.demo1.service.ConnectionService;
+import com.example.demo1.repository.ConnectionRepo;
 import com.example.demo1.service.MainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 @RestController
 public class MainController {
@@ -18,70 +17,82 @@ public class MainController {
     MainService m;
 
     @Autowired
-    ConnectionService connectionService;
+    ConnectionRepo repo;
 
     @GetMapping("/connect/test")
     public ResponseEntity<String> testConnection(@RequestParam int id) {
         try{
-            List<String> al=connectionService.getDetails(id);
-            DbDetails db = new DbDetails(al.get(0), al.get(1), al.get(2));
+            ConnectionEntity c=repo.findById(id).get();
+            DbDetails db = new DbDetails(c.getUrl(),c.getUsername(), c.getPassword());
             if (m.isConnected(db)) {
                 return ResponseEntity.ok("Connected successfully");
             } else {
-                return ResponseEntity.status(500).body("Internal Server Error");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
             }
         }catch(RuntimeException e){
-            return ResponseEntity.ok("Id not present");
+            if (e.getMessage().contains("credentials")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Check Credentials of connection");
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id not present");
         }
 
     }
 
     @GetMapping("/catalogs")
-    public List<String> getDatabases(@RequestParam int id) {
+    public ResponseEntity<?> getDatabases(@RequestParam int id) {
         try{
-            List<String> al=connectionService.getDetails(id);
-            DbDetails db = new DbDetails(al.get(0), al.get(1), al.get(2));
-            return m.databases(db);
+            ConnectionEntity c=repo.findById(id).get();
+            DbDetails db = new DbDetails(c.getUrl(),c.getUsername(), c.getPassword());
+            if(m.isConnected(db))
+                return ResponseEntity.ok(m.databases(db));
         }
         catch(RuntimeException e){
-            if(e.getMessage().contains("Connection ID not found")){
-                return new ArrayList<>();
+//            System.out.println(e);
+            if(e.getMessage().contains("No value present")){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Connection Id not present");
             }
+            if(e.getMessage().contains("Check"))
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Check connection Credentials");
         }
-        return new ArrayList<>();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
     }
 
     @GetMapping("/tables")
-    public List<String> getTables(
+    public ResponseEntity<?> getTables(
                                   @RequestParam int id,
                                   @RequestParam String database) {
         try{
-            List<String> al=connectionService.getDetails(id);
-            DbDetails db = new DbDetails(al.get(0), al.get(1), al.get(2));
-            return m.tables(database, db);
+            ConnectionEntity c=repo.findById(id).get();
+            DbDetails db = new DbDetails(c.getUrl(),c.getUsername(), c.getPassword());
+            if(m.isConnected(db))
+                return ResponseEntity.ok(m.databases(db));
         }
         catch(RuntimeException e){
-            if(e.getMessage().contains("Connection ID not found")){
-                return new ArrayList<String>();
+            if(e.getMessage().contains("Check if")){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Check if database exist");
             }
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Check connection credentials");
         }
-        return new ArrayList<String>();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID doesnt exist");
+
     }
 
     @GetMapping("/columns")
-    public HashMap<String, String> getColumns(
-                                              @RequestParam int id,
-                                              @RequestParam String database,
-                                              @RequestParam String table) {
+    public ResponseEntity<?> getColumns(@RequestParam int id,
+                                        @RequestParam String database, @RequestParam String table) {
         try{
-            List<String> al=connectionService.getDetails(id);
-            DbDetails db = new DbDetails(al.get(0), al.get(1), al.get(2));
-            return m.columns(database, table, db);
+            ConnectionEntity c=repo.findById(id).get();
+            DbDetails db = new DbDetails(c.getUrl(),c.getUsername(), c.getPassword());
+            if(m.isConnected(db))
+                return ResponseEntity.ok().body(m.columns(database, table, db));
         }catch(RuntimeException e){
-            if(e.getMessage().contains("ID")){
-                return new HashMap<String,String>();
+            if(e.getMessage().contains("Check if")){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Check if database and tables exist");
+            }
+            if(e.getMessage().contains("credentials")){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Check connection credentials");
             }
         }
-        return new HashMap<String,String>();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID doesnt exist");
     }
 }
