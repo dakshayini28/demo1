@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ConnectionController {
@@ -51,10 +52,9 @@ public class ConnectionController {
     @PutMapping("/updateconnection")
     public ResponseEntity<String> updateConnection(
             @RequestParam int id,
-            @RequestParam String field,
-            @RequestParam String newVal) {
+            @RequestBody Map<String,String> newVal) {
         try {
-            connectionService.update(id, field,newVal);
+            connectionService.update(id, newVal);
             return ResponseEntity.ok().body("Connection updated");
         } catch (Exception e) {
             if(e.getMessage().contains("Id may"))
