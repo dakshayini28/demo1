@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,14 +53,15 @@ public class ConnectionController {
     @PutMapping("/updateconnection")
     public ResponseEntity<String> updateConnection(
             @RequestParam int id,
-            @RequestBody Map<String,String> newVal) {
+            @RequestBody HashMap<String, String> newVal) {
         try {
             connectionService.update(id, newVal);
             return ResponseEntity.ok().body("Connection updated");
         } catch (Exception e) {
             if(e.getMessage().contains("Id may"))
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id is not present");
-
+            if(e.getMessage().contains("Invalid"))
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Check fields");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update connection");
         }
     }

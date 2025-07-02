@@ -4,12 +4,15 @@ import jakarta.persistence.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @Entity
-@Table(name = "connection")
+@Table(name = "connection",
+uniqueConstraints = {
+@UniqueConstraint(name = "connection_name", columnNames = {"name"})
+    })
 public class ConnectionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(unique = true)
+    @Column()
     private String name;
     @Column
     private String url;
