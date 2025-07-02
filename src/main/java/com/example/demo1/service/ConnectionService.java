@@ -1,10 +1,14 @@
 package com.example.demo1.service;
 
 import com.example.demo1.entity.ConnectionEntity;
+import com.example.demo1.entity.UserEntity;
 import com.example.demo1.repository.ConnectionRepo;
+import com.example.demo1.repository.UserRepo;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.spec.ECField;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +17,14 @@ import java.util.Optional;
 public class ConnectionService {
     @Autowired
     ConnectionRepo repo;
-    public void add(ConnectionEntity data){
+    @Autowired
+    UserRepo repo1;
+    public void add(ConnectionEntity data,int user_id){
+        Optional<UserEntity> o=repo1.findById(user_id);
+        if(o.isEmpty())
+            throw new RuntimeException("This user doesnt exist");
+        UserEntity user=o.get();
+        data.setUser(user);
         repo.save(data);
     }
     public void delete(int id) {

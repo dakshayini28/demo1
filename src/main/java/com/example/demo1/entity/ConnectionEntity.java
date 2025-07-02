@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @Entity
-@Table(name = "connection",
+@Table(name = "connection_u",
 uniqueConstraints = {
-@UniqueConstraint(name = "connection_name", columnNames = {"name"})
+@UniqueConstraint(name = "connection_name", columnNames = {"user_id","name"})
     })
 public class ConnectionEntity {
     @Id
@@ -16,11 +16,24 @@ public class ConnectionEntity {
     private String name;
     @Column
     private String url;
-
     @Column
     private String username;
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
     @Column
     private String password;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true,
+            foreignKey = @ForeignKey(name = "fk_user_connection"))
+    private UserEntity user;
 
     public String getPassword() {
         return password;

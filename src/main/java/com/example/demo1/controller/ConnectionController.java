@@ -28,11 +28,14 @@ public class ConnectionController {
     }
 
     @PostMapping("/addconnection")
-    public ResponseEntity<String> addConnection(@RequestBody ConnectionEntity con) {
+    public ResponseEntity<String> addConnection(@RequestParam int user_id,@RequestBody ConnectionEntity con) {
         try {
-            connectionService.add(con);
+            connectionService.add(con,user_id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Connection created");
         } catch (Exception e) {
+            if(e.getMessage().contains("This user"))
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user doesnt exist");
+
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Connection name already exists");
         }
     }
