@@ -2,6 +2,7 @@ package com.example.demo1.controller;
 
 import com.example.demo1.entity.ConnectionEntity;
 import com.example.demo1.entity.UserEntity;
+import com.example.demo1.repository.ConnectionRepo;
 import com.example.demo1.repository.UserRepo;
 import com.example.demo1.service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,8 @@ public class ConnectionController {
     ConnectionService connectionService;
     @Autowired
     UserRepo repo;
+    @Autowired
+    ConnectionRepo repo1;
     @GetMapping("/connection")
     public ResponseEntity<List<ConnectionEntity>> getConnections() {
         try {
@@ -81,4 +85,25 @@ public class ConnectionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update connection");
         }
     }
+    @GetMapping("/connection-basic")
+    public List<Map<String, Object>> getMinimalConnections() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        UserEntity user = repo.findByUserName(username);
+//        if (user == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+//        }
+        int user_id = user.getUserId();
+        List<Object[]> rawList = repo1.findIdAndNameByUsername(user_id);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Object[] row : rawList) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("connectionId", row[0]);
+            map.put("connectionName", row[1]);
+            result.add(map);
+        }
+        return result;
+    }
+
 }
