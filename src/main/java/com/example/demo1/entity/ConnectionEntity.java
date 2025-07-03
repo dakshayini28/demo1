@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 @Entity
 @Table(name = "connection_u",
 uniqueConstraints = {
-@UniqueConstraint(name = "connection_name", columnNames = {"user_id","name"})
+@UniqueConstraint(name = "connection_name", columnNames = {"user_id","id"})
     })
 public class ConnectionEntity {
     @Id

@@ -6,6 +6,8 @@ import com.example.demo1.repository.ConnectionRepo;
 import com.example.demo1.repository.UserRepo;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.spec.ECField;
@@ -28,23 +30,41 @@ public class ConnectionService {
         repo.save(data);
     }
     public void delete(int id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        UserEntity user = repo1.findByUserName(username);
         Optional<ConnectionEntity> optionalEntity = repo.findById(id);
         if (optionalEntity.isPresent()) {
             ConnectionEntity entity = optionalEntity.get();
+            if (entity.getUser().getUserId() != user.getUserId()) {
+                throw new RuntimeException("You are not authorized to delete this connection.");
+            }
             repo.delete(entity);
         } else {
             throw new RuntimeException("Connection not found with id: " + id);
         }
     }
-
     public List<ConnectionEntity> getAll(){
-        return repo.findAll();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        UserEntity user = repo1.findByUserName(username);
+        System.out.println("hey daksh"+repo.findByUser_UserId(user.getUserId()));
+        return repo.findByUser_UserId(user.getUserId());
+
     }
     public void update(int id, Map<String, String> newVal) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        UserEntity user = repo1.findByUserName(username);
+
         Optional<ConnectionEntity> o = repo.findById(id);
 
         if (o.isPresent()) {
             ConnectionEntity c = o.get();
+
+            if (c.getUser().getUserId() != user.getUserId()) {
+                throw new RuntimeException("You are not authorized to update this connection.");
+            }
 
             for (Map.Entry<String, String> entry : newVal.entrySet()) {
                 String field = entry.getKey();
@@ -67,10 +87,9 @@ public class ConnectionService {
                         throw new RuntimeException("Invalid field: " + field);
                 }
             }
-
             repo.save(c);
         } else {
-            throw new RuntimeException("Id may not be present");
+            throw new RuntimeException("Connection not found with id: " + id);
         }
     }
 

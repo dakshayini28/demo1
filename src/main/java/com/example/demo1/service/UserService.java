@@ -6,21 +6,23 @@ import com.example.demo1.repository.UserRepo;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
     @Autowired
     UserRepo repo;
+    private static final PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
     public List<UserEntity> getAllUsers(){
         return repo.findAll();
     }
     public void addUser(UserEntity u){
+        u.setPassword(passwordEncoder.encode(u.getPassword()));
+        u.setRoles(List.of("ADMIN"));
         repo.save(u);
     }
     public void update(int id,HashMap<String,String> h){
@@ -39,6 +41,9 @@ public class UserService {
                         break;
                     case "email":
                         c.setEmail(value);
+                        break;
+                    case "password":
+                        c.setPassword(passwordEncoder.encode(value));
                         break;
                     default:
                         throw new RuntimeException("Invalid field: " + field);

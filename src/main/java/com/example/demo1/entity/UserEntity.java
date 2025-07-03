@@ -1,17 +1,24 @@
 package com.example.demo1.entity;
 
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
+
+import java.util.List;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
+    @Column(unique = true)
     private String userName;
+    @NonNull
+    private String password;
     @Column(unique = true)
     private String email;
     private String mobile;
+    private List<String> roles;
 
     public int getUserId() {
         return userId;
@@ -39,6 +46,23 @@ public class UserEntity {
 
     public String getMobile() {
         return mobile;
+    }
+
+    @NonNull
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@NonNull String password) {
+        this.password = password;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 
     public void setMobile(String mobile) {

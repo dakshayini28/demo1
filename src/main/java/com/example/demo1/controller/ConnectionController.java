@@ -1,10 +1,14 @@
 package com.example.demo1.controller;
 
 import com.example.demo1.entity.ConnectionEntity;
+import com.example.demo1.entity.UserEntity;
+import com.example.demo1.repository.UserRepo;
 import com.example.demo1.service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -12,11 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/connect")
 public class ConnectionController {
 
     @Autowired
     ConnectionService connectionService;
-
+    @Autowired
+    UserRepo repo;
     @GetMapping("/connection")
     public ResponseEntity<List<ConnectionEntity>> getConnections() {
         try {
@@ -27,9 +33,16 @@ public class ConnectionController {
         }
     }
 
-    @PostMapping("/addconnection")
-    public ResponseEntity<String> addConnection(@RequestParam int user_id,@RequestBody ConnectionEntity con) {
+    @PostMapping("/add-connection")
+    public ResponseEntity<String> addConnection(@RequestBody ConnectionEntity con) {
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            UserEntity user = repo.findByUserName(username);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+            int user_id = user.getUserId();
             connectionService.add(con,user_id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Connection created");
         } catch (Exception e) {
