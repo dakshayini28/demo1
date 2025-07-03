@@ -44,4 +44,13 @@ public class UserEntity {
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + userId +
+                ", username='" + userName + '\'' +
+                ", email='" + email + '\'' +  // include relevant fields
+                '}';
+    }
+
 }
