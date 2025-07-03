@@ -27,7 +27,7 @@ public class ConnectionController {
         }
     }
 
-    @PostMapping("/addconnection")
+    @PostMapping("/add-connection")
     public ResponseEntity<String> addConnection(@RequestParam int user_id,@RequestBody ConnectionEntity con) {
         try {
             connectionService.add(con,user_id);
