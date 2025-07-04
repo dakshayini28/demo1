@@ -33,7 +33,7 @@ public class UserService {
                 String field = entry.getKey();
                 String value = entry.getValue();
                 switch (field) {
-                    case "userName":
+                    case "username":
                         c.setUserName(value);
                         break;
                     case "mobile":

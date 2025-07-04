@@ -86,16 +86,15 @@ public class ConnectionController {
         }
     }
     @GetMapping("/connection-basic")
-    public List<Map<String, Object>> getMinimalConnections() {
+    public ResponseEntity<?> getMinimalConnections() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         UserEntity user = repo.findByUserName(username);
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-//        }
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
         int user_id = user.getUserId();
         List<Object[]> rawList = repo1.findIdAndNameByUsername(user_id);
-
         List<Map<String, Object>> result = new ArrayList<>();
         for (Object[] row : rawList) {
             Map<String, Object> map = new HashMap<>();
@@ -103,7 +102,6 @@ public class ConnectionController {
             map.put("connectionName", row[1]);
             result.add(map);
         }
-        return result;
+        return ResponseEntity.ok(result);
     }
-
 }
