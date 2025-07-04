@@ -104,4 +104,18 @@ public class ConnectionController {
         }
         return ResponseEntity.ok(result);
     }
+    @GetMapping("/search-connection")
+    public ResponseEntity<?> searchConnection(@RequestParam String name){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        UserEntity user = repo.findByUserName(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        try{
+            return ResponseEntity.ok(connectionService.searchConnection(name,user.getUserId()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

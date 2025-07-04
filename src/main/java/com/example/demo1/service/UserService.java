@@ -22,7 +22,6 @@ public class UserService {
     }
     public void addUser(UserEntity u){
         u.setPassword(passwordEncoder.encode(u.getPassword()));
-        u.setRoles(List.of("ADMIN"));
         repo.save(u);
     }
     public void update(int id,HashMap<String,String> h){

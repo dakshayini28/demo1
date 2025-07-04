@@ -14,4 +14,6 @@ public interface ConnectionRepo extends JpaRepository<ConnectionEntity,Integer> 
     @Query("SELECT s.id, s.name FROM ConnectionEntity s WHERE s.user.userId = :userId")
     List<Object[]> findIdAndNameByUsername(@Param("userId") int userId);
 
+    @Query("select c from ConnectionEntity c where c.name like %:name% and user.userId=:userId")
+    List<ConnectionEntity> findConnection(@Param("name") String name,@Param("userId") int userId);
 }

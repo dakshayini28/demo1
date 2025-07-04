@@ -31,7 +31,7 @@ public class ConnectionEntity {
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = true,
+    @JoinColumn(name = "user_id",
             foreignKey = @ForeignKey(name = "fk_user_connection"))
     private UserEntity user;
 
@@ -73,5 +73,17 @@ public class ConnectionEntity {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public String toString() {
+        return "ConnectionEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", user=" + user +
+                '}';
     }
 }

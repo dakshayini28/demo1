@@ -18,7 +18,6 @@ public class UserEntity {
     @Column(unique = true)
     private String email;
     private String mobile;
-    private List<String> roles;
 
     public int getUserId() {
         return userId;
@@ -57,13 +56,6 @@ public class UserEntity {
         this.password = password;
     }
 
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
 
     public void setMobile(String mobile) {
         this.mobile = mobile;

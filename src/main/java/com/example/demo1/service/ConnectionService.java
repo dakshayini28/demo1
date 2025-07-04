@@ -6,6 +6,7 @@ import com.example.demo1.repository.ConnectionRepo;
 import com.example.demo1.repository.UserRepo;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -92,5 +93,7 @@ public class ConnectionService {
             throw new RuntimeException("Connection not found with id: " + id);
         }
     }
-
+    public List<ConnectionEntity> searchConnection(String s,int user_id ){
+        return repo.findConnection(s,user_id);
+    }
 }
