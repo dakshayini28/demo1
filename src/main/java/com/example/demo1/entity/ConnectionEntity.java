@@ -2,8 +2,15 @@ package com.example.demo1.entity;
 
 import jakarta.persistence.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "connection_u",
 uniqueConstraints = {
 @UniqueConstraint(name = "connection_name", columnNames = {"user_id","id"})
@@ -18,6 +25,29 @@ public class ConnectionEntity {
     private String url;
     @Column
     private String username;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime created_at;
+
+    @LastModifiedDate
+    private LocalDateTime lastModified_at;
+
+    public LocalDateTime getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
+    }
+
+    public LocalDateTime getLastModified_at() {
+        return lastModified_at;
+    }
+
+    public void setLastModified_at(LocalDateTime lastModified_at) {
+        this.lastModified_at = lastModified_at;
+    }
 
     public UserEntity getUser() {
         return user;
