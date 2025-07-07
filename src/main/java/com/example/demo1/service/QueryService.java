@@ -28,10 +28,10 @@ public class QueryService {
                 for (int i = 1; i <= columnCount; i++) {
                     Map<String, Object> colMeta = new LinkedHashMap<>();
                     colMeta.put("columnName", metaData.getColumnName(i));
-                    colMeta.put("Alias name",metaData.getColumnLabel(i));
+                    colMeta.put("aliasName",metaData.getColumnLabel(i));
                     colMeta.put("dataType", metaData.getColumnTypeName(i));
-                    colMeta.put("Is AutoIncrement",metaData.isAutoIncrement(i));
-                    colMeta.put("Is null",metaData.isNullable(i));
+                    colMeta.put("isAutoIncrement",metaData.isAutoIncrement(i));
+                    colMeta.put("isNull",metaData.isNullable(i));
                     colMeta.put("precision", metaData.getPrecision(i));
                     colMeta.put("scale", metaData.getScale(i));
                     metaList.add(colMeta);
