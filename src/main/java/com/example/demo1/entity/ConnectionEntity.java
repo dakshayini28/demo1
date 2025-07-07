@@ -1,6 +1,8 @@
 package com.example.demo1.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @Entity
@@ -31,9 +33,10 @@ public class ConnectionEntity {
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",
-            foreignKey = @ForeignKey(name = "fk_user_connection"))
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE.CASCADE)
     private UserEntity user;
+
 
     public String getPassword() {
         return password;
