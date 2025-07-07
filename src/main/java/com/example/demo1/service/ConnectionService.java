@@ -6,6 +6,10 @@ import com.example.demo1.repository.ConnectionRepo;
 import com.example.demo1.repository.UserRepo;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -96,4 +100,10 @@ public class ConnectionService {
     public List<ConnectionEntity> searchConnection(String s,int user_id ){
         return repo.findConnection(s,user_id);
     }
+    public List<ConnectionEntity> recentConnections(int userId,int page,int offset) {
+        Pageable lastModifiedAt = PageRequest.of(page, offset).withSort(Sort.by(Sort.Direction.DESC, "lastModified_at"));
+        Page<ConnectionEntity> recentConnections = repo.findRecentConnections(userId, lastModifiedAt);
+        return recentConnections.getContent();
+    }
+
 }

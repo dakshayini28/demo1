@@ -6,6 +6,7 @@ import com.example.demo1.repository.ConnectionRepo;
 import com.example.demo1.repository.UserRepo;
 import com.example.demo1.service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -114,6 +115,20 @@ public class ConnectionController {
         }
         try{
             return ResponseEntity.ok(connectionService.searchConnection(name,user.getUserId()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @GetMapping("/recent-connections")
+    public ResponseEntity<?> recentConnections(@RequestParam int page,@RequestParam int offset){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        UserEntity user = repo.findByUserName(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        try{
+            return ResponseEntity.ok(connectionService.recentConnections(user.getUserId(),page,offset));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

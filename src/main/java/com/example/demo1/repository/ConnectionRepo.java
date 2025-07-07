@@ -1,6 +1,10 @@
 package com.example.demo1.repository;
 
 import com.example.demo1.entity.ConnectionEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +20,7 @@ public interface ConnectionRepo extends JpaRepository<ConnectionEntity,Integer> 
 
     @Query("select c from ConnectionEntity c where c.name like %:name% and user.userId=:userId")
     List<ConnectionEntity> findConnection(@Param("name") String name,@Param("userId") int userId);
+
+    @Query("select s from ConnectionEntity s where user.userId=:userId")
+    Page<ConnectionEntity> findRecentConnections(@Param("userId") int userId, Pageable page);
 }
