@@ -28,7 +28,7 @@ public class ConnectionController {
     UserRepo repo;
     @Autowired
     ConnectionRepo repo1;
-    @GetMapping("/connection")
+    @GetMapping("/getConnections")
     public ResponseEntity<List<ConnectionEntity>> getConnections() {
         try {
             List<ConnectionEntity> connections = connectionService.getAll();
