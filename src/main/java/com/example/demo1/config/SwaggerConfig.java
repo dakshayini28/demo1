@@ -25,7 +25,7 @@ public class SwaggerConfig {
                         .description("Spring-application"))
                 .servers(List.of(
                         new Server().url("http://localhost:8080").description("local"),
-                        new Server().url("http://10.10.20.28:8080").description("server")
+                        new Server().url("http://10.10.20.29:8080").description("server")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components().addSecuritySchemes(securitySchemeName,
