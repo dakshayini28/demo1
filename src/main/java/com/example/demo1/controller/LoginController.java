@@ -1,7 +1,9 @@
 package com.example.demo1.controller;
 
+import com.example.demo1.dto.LoginDto;
 import com.example.demo1.service.UserDetailsServiceImp;
 import com.example.demo1.util.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@Tag(name = "login API",description = "login with username and password")
 @RequestMapping("/users")
 public class LoginController {
     @Autowired
@@ -30,9 +33,9 @@ public class LoginController {
     private UserDetailsServiceImp userDetailsService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
-        String username = loginData.get("username");
-        String password = loginData.get("password");
+    public ResponseEntity<?> login(@RequestBody LoginDto loginData) {
+        String username = loginData.getUsername();
+        String password = loginData.getPassword();
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)

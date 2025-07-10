@@ -1,7 +1,9 @@
 package com.example.demo1.controller;
 
+import com.example.demo1.dto.UserDto;
 import com.example.demo1.entity.UserEntity;
 import com.example.demo1.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -13,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name="User CRUD API")
 public class UserController {
     @Autowired
     UserService userService;
@@ -21,7 +24,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
     @PostMapping("/add")
-    public ResponseEntity<String> addUser(@RequestBody UserEntity u){
+    public ResponseEntity<String> addUser(@RequestBody UserDto u){
         try{
             userService.addUser(u);
             return ResponseEntity.status(HttpStatus.CREATED).body("Added");
@@ -30,7 +33,7 @@ public class UserController {
         }
     }
     @PutMapping("/update")
-    public ResponseEntity<?> updateData(@RequestParam int id, @RequestBody HashMap<String,String> h){
+    public ResponseEntity<?> updateData(@RequestParam int id, @RequestBody UserDto h){
         try {
             userService.update(id, h);
             return ResponseEntity.ok().body("User updated");

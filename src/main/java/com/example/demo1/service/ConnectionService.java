@@ -1,5 +1,6 @@
 package com.example.demo1.service;
 
+import com.example.demo1.dto.ConnectionDto;
 import com.example.demo1.entity.ConnectionEntity;
 import com.example.demo1.entity.UserEntity;
 import com.example.demo1.repository.ConnectionRepo;
@@ -26,13 +27,18 @@ public class ConnectionService {
     ConnectionRepo repo;
     @Autowired
     UserRepo repo1;
-    public void add(ConnectionEntity data,int user_id){
+    public void add(ConnectionDto data, int user_id){
         Optional<UserEntity> o=repo1.findById(user_id);
         if(o.isEmpty())
             throw new RuntimeException("This user doesnt exist");
         UserEntity user=o.get();
-        data.setUser(user);
-        repo.save(data);
+        ConnectionEntity connection=new ConnectionEntity();
+        connection.setName(data.getName());
+        connection.setUsername(data.getUsername());
+        connection.setUrl(data.getUrl());
+        connection.setPassword(data.getPassword());
+        connection.setUser(user);
+        repo.save(connection);
     }
     public void delete(int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -57,7 +63,7 @@ public class ConnectionService {
         return repo.findByUser_UserId(user.getUserId());
 
     }
-    public void update(int id, Map<String, String> newVal) {
+    public void update(int id, ConnectionDto dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         UserEntity user = repo1.findByUserName(username);
@@ -71,27 +77,11 @@ public class ConnectionService {
                 throw new RuntimeException("You are not authorized to update this connection.");
             }
 
-            for (Map.Entry<String, String> entry : newVal.entrySet()) {
-                String field = entry.getKey();
-                String value = entry.getValue();
+            if (dto.getName() != null) c.setName(dto.getName());
+            if (dto.getUrl() != null) c.setUrl(dto.getUrl());
+            if (dto.getUsername() != null) c.setUsername(dto.getUsername());
+            if (dto.getPassword() != null) c.setPassword(dto.getPassword());
 
-                switch (field) {
-                    case "name":
-                        c.setName(value);
-                        break;
-                    case "url":
-                        c.setUrl(value);
-                        break;
-                    case "username":
-                        c.setUsername(value);
-                        break;
-                    case "password":
-                        c.setPassword(value);
-                        break;
-                    default:
-                        throw new RuntimeException("Invalid field: " + field);
-                }
-            }
             repo.save(c);
         } else {
             throw new RuntimeException("Connection not found with id: " + id);

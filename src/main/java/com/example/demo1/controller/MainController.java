@@ -4,15 +4,16 @@ import com.example.demo1.entity.ConnectionEntity;
 import com.example.demo1.entity.DbDetails;
 import com.example.demo1.repository.ConnectionRepo;
 import com.example.demo1.service.MainService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
-
+@Tag(name="connection usage",description = "test connections")
 @RestController
-@RequestMapping("/query")
+//@RequestMapping("/query")
 public class MainController {
 
     @Autowired

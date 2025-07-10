@@ -1,10 +1,12 @@
 package com.example.demo1.controller;
 
+import com.example.demo1.dto.ConnectionDto;
 import com.example.demo1.entity.ConnectionEntity;
 import com.example.demo1.entity.UserEntity;
 import com.example.demo1.repository.ConnectionRepo;
 import com.example.demo1.repository.UserRepo;
 import com.example.demo1.service.ConnectionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/connect")
+@Tag(name="connection API",description = "connection-CRUD")
 public class ConnectionController {
 
     @Autowired
@@ -39,7 +42,7 @@ public class ConnectionController {
     }
 
     @PostMapping("/add-connection")
-    public ResponseEntity<String> addConnection(@RequestBody ConnectionEntity con) {
+    public ResponseEntity<String> addConnection(@RequestBody ConnectionDto con) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
@@ -74,18 +77,21 @@ public class ConnectionController {
     @PutMapping("/updateconnection")
     public ResponseEntity<String> updateConnection(
             @RequestParam int id,
-            @RequestBody HashMap<String, String> newVal) {
+            @RequestBody ConnectionDto dto) {
         try {
-            connectionService.update(id, newVal);
-            return ResponseEntity.ok().body("Connection updated");
+            connectionService.update(id, dto);
+            return ResponseEntity.ok("Connection updated");
         } catch (Exception e) {
-            if(e.getMessage().contains("Id may"))
+            if (e.getMessage().contains("authorized"))
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not authorized to update this connection");
+            if (e.getMessage().contains("not found"))
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id is not present");
-            if(e.getMessage().contains("Invalid"))
+            if (e.getMessage().contains("Invalid"))
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Check fields");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update connection");
         }
     }
+
     @GetMapping("/connection-basic")
     public ResponseEntity<?> getMinimalConnections() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

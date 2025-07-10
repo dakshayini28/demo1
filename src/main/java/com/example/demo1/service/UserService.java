@@ -1,5 +1,6 @@
 package com.example.demo1.service;
 
+import com.example.demo1.dto.UserDto;
 import com.example.demo1.entity.ConnectionEntity;
 import com.example.demo1.entity.UserEntity;
 import com.example.demo1.repository.UserRepo;
@@ -20,34 +21,32 @@ public class UserService {
     public List<UserEntity> getAllUsers(){
         return repo.findAll();
     }
-    public void addUser(UserEntity u){
+    public void addUser(UserDto u){
+        UserEntity user=new UserEntity();
         u.setPassword(passwordEncoder.encode(u.getPassword()));
-        repo.save(u);
+        user.setPassword(u.getPassword());
+        user.setEmail(u.getEmail());
+        user.setMobile(u.getMobile());
+        user.setUserName(u.getUserName());
+        repo.save(user);
     }
-    public void update(int id,HashMap<String,String> h){
-        Optional<UserEntity>o=repo.findById(id);
+    public void update(int id, UserDto dto) {
+        Optional<UserEntity> o = repo.findById(id);
         if (o.isPresent()) {
             UserEntity c = o.get();
-            for (Map.Entry<String, String> entry : h.entrySet()) {
-                String field = entry.getKey();
-                String value = entry.getValue();
-                switch (field) {
-                    case "username":
-                        c.setUserName(value);
-                        break;
-                    case "mobile":
-                        c.setMobile(value);
-                        break;
-                    case "email":
-                        c.setEmail(value);
-                        break;
-                    case "password":
-                        c.setPassword(passwordEncoder.encode(value));
-                        break;
-                    default:
-                        throw new RuntimeException("Invalid field: " + field);
-                }
+            if (dto.getUserName() != null) {
+                c.setUserName(dto.getUserName());
             }
+            if (dto.getMobile() != null) {
+                c.setMobile(dto.getMobile());
+            }
+            if (dto.getEmail() != null) {
+                c.setEmail(dto.getEmail());
+            }
+            if (dto.getPassword() != null) {
+                c.setPassword(passwordEncoder.encode(dto.getPassword()));
+            }
+
             repo.save(c);
         } else {
             throw new RuntimeException("Id may not be present");
