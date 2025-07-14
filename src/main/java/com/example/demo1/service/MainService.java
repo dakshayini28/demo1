@@ -35,8 +35,10 @@ public class MainService {
 
             return con != null;
 
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException("Connection failed: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Class not found: " + e.getMessage());
+        }catch (Exception e) {
+            throw new RuntimeException("Connection failedsss: " + e.getMessage());
         }
     }
 
