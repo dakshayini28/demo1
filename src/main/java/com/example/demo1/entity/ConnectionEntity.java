@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "connection_u",
 uniqueConstraints = {
-@UniqueConstraint(name = "connection_name", columnNames = {"user_id","id"})
+@UniqueConstraint(name = "connection_name", columnNames = {"user_id","name"})
     })
 public class ConnectionEntity {
     @Id
