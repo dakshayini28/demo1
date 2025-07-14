@@ -41,7 +41,7 @@ public class ConnectionController {
         }
     }
 
-    @PostMapping("/add-connection")
+    @PostMapping("/addConnection")
     public ResponseEntity<String> addConnection(@RequestBody ConnectionDto con) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -61,7 +61,7 @@ public class ConnectionController {
         }
     }
 
-    @DeleteMapping("/deleteconnection")
+    @DeleteMapping("/deleteConnection")
     public ResponseEntity<String> deleteConnection(@RequestParam int id) {
         try {
             connectionService.delete(id);
@@ -74,7 +74,7 @@ public class ConnectionController {
         }
     }
 
-    @PutMapping("/updateconnection")
+    @PutMapping("/updateConnection")
     public ResponseEntity<String> updateConnection(
             @RequestParam int id,
             @RequestBody ConnectionDto dto) {
@@ -92,7 +92,7 @@ public class ConnectionController {
         }
     }
 
-    @GetMapping("/connection-basic")
+    @GetMapping("/connectionBasic")
     public ResponseEntity<?> getMinimalConnections() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -111,7 +111,7 @@ public class ConnectionController {
         }
         return ResponseEntity.ok(result);
     }
-    @GetMapping("/search-connection")
+    @GetMapping("/searchConnection")
     public ResponseEntity<?> searchConnection(@RequestParam String name){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -125,7 +125,7 @@ public class ConnectionController {
             throw new RuntimeException(e);
         }
     }
-    @GetMapping("/recent-connections")
+    @GetMapping("/recentConnections")
     public ResponseEntity<?> recentConnections(@RequestParam int page,@RequestParam int offset){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

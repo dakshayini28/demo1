@@ -1,5 +1,6 @@
 package com.example.demo1.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.annotation.CreatedDate;
@@ -63,6 +64,7 @@ public class ConnectionEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",
             foreignKey = @ForeignKey(name = "fk_user_connection"))
+    @JsonIgnore
     private UserEntity user;
 
     public String getPassword() {

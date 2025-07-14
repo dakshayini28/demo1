@@ -59,7 +59,7 @@ public class ConnectionService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         UserEntity user = repo1.findByUserName(username);
-        System.out.println("hey daksh"+repo.findByUser_UserId(user.getUserId()));
+//        System.out.println("hey daksh"+repo.findByUser_UserId(user.getUserId()));
         return repo.findByUser_UserId(user.getUserId());
 
     }
