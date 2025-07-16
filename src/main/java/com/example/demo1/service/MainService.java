@@ -90,7 +90,8 @@ public class MainService {
 
     private String getSampleRowQuery(String database, String table) {
         return switch (dbType) {
-            case "mysql", "postgresql" -> "SELECT * FROM \"" + database + "\".\"" + table + "\" LIMIT 1";
+            case "mysql" -> "SELECT * FROM `" + database + "`.`" + table + "` LIMIT 1";
+            case "postgresql" -> "SELECT * FROM \"" + database + "\".\"" + table + "\" LIMIT 1";
             case "sqlserver" -> "SELECT TOP 1 * FROM " + database + ".dbo.[" + table + "]";
             case "oracle" -> "SELECT * FROM " + database + "." + table + " WHERE ROWNUM = 1";
             default -> throw new RuntimeException("Unsupported DB for column metadata");
