@@ -52,31 +52,66 @@ public class MainService {
         };
     }
 
-    private String getSchemasQuery() {
-        return switch (dbType) {
-            case "mysql" -> "SELECT schema_name FROM information_schema.schemata";
-            case "postgresql" -> "SELECT schema_name FROM information_schema.schemata";
-            case "sqlserver" -> "SELECT name FROM sys.schemas";
-            case "oracle" -> "SELECT username AS schema_name FROM all_users";
-            default -> throw new RuntimeException("Unsupported DB for schema query");
-        };
-    }
-    public List<Map<String, Object>> schemas() {
+    public List<Map<String, Object>> schemas(String dbName) {
         List<Map<String, Object>> list = new ArrayList<>();
-        try (Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(getSchemasQuery())) {
-            while (rs.next()) {
-                Map<String, Object> schema = new HashMap<>();
-                schema.put("name", rs.getString(1));
-                schema.put("type", "schema");
-                schema.put("properties", new HashMap<>());
-                list.add(schema);
+        try (Statement stmt = con.createStatement()) {
+            ResultSet rs;
+
+            switch (dbType) {
+                case "mysql":
+                    rs = stmt.executeQuery("SHOW TABLES IN `" + dbName + "`");
+//                    while (rs.next()) {
+//                        Map<String, Object> table = new HashMap<>();
+//                        table.put("name", rs.getString(1));
+//                        table.put("type", "table");
+//                        table.put("properties", new HashMap<>());
+//                        list.add(table);
+//                    }
+                    break;
+
+                case "sqlserver":
+                    rs = stmt.executeQuery("SELECT name FROM " + dbName + ".sys.schemas");
+                    while (rs.next()) {
+                        Map<String, Object> schema = new HashMap<>();
+                        schema.put("name", rs.getString(1));
+                        schema.put("type", "schema");
+                        schema.put("properties", new HashMap<>());
+                        list.add(schema);
+                    }
+                    break;
+
+                case "postgresql":
+                    rs = stmt.executeQuery("SELECT schema_name FROM information_schema.schemata");
+                    while (rs.next()) {
+                        Map<String, Object> schema = new HashMap<>();
+                        schema.put("name", rs.getString(1));
+                        schema.put("type", "schema");
+                        schema.put("properties", new HashMap<>());
+                        list.add(schema);
+                    }
+                    break;
+
+                case "oracle":
+                    rs = stmt.executeQuery("SELECT username AS schema_name FROM all_users");
+                    while (rs.next()) {
+                        Map<String, Object> schema = new HashMap<>();
+                        schema.put("name", rs.getString(1));
+                        schema.put("type", "schema");
+                        schema.put("properties", new HashMap<>());
+                        list.add(schema);
+                    }
+                    break;
+
+                default:
+                    throw new RuntimeException("Unsupported DB for schema listing");
             }
+
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching schemas: " + e.getMessage());
+            throw new RuntimeException("Error fetching schemas/tables: " + e.getMessage());
         }
         return list;
     }
+
 
     private String getTablesQuery(String dbName) {
         return switch (dbType) {
