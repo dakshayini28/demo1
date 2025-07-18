@@ -61,21 +61,25 @@ public class MainController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
     }
     @GetMapping("/schemas")
-    public ResponseEntity<?> getSchemas(@RequestParam int id) {
-        try{
+    public ResponseEntity<?> getSchemas(@RequestParam int id, @RequestParam String dbName) {
+        try {
             Optional<ConnectionEntity> optionalConnection = repo.findById(id);
             if (optionalConnection.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Connection ID not present");
             }
+
             ConnectionEntity connection = optionalConnection.get();
             DbDetails db = new DbDetails(connection.getUrl(), connection.getUsername(), connection.getPassword());
-            if(m.isConnected(db))
-                return ResponseEntity.ok(m.schemas());
-        }
-        catch(RuntimeException e){
-            if(e.getMessage().contains("Check"))
+
+            if (m.isConnected(db)) {
+                return ResponseEntity.ok(m.schemas(dbName));
+            }
+
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Check"))
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Check connection Credentials");
         }
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
     }
 
